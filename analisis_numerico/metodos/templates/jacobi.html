@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Jacobi{% endblock %}
+{% block content %}
+  <h1>Método de Jacobi</h1>
+  <form method="post">
+    {% csrf_token %}
+    <label>A:<textarea name="A" rows="3" cols="30" required></textarea></label><br>
+    <label>b:<textarea name="b" rows="3" cols="30" required></textarea></label><br>
+    <label>x0:<textarea name="x0" rows="3" cols="30" required></textarea></label><br>
+    <label>Tol:<input type="number" step="any" name="Tol" required></label><br>
+    <label>niter:<input type="number" name="niter" min="1" required></label><br>
+    <label>Tipo de error:
+      <select name="error_type">
+        <option value="absoluto">Absoluto</option>
+        <option value="relativo">Relativo</option>
+      </select>
+    </label><br>
+    <button type="submit">Calcular</button>
+  </form>
+
+  {% if resultado %}
+    <h2>Resultado</h2>
+    <p>x = {{ resultado.x|join:", " }}</p>
+    <h3>Historial</h3>
+    <table border="1">
+      <tr><th>k</th><th>x</th><th>E</th></tr>
+      {% for k, xi, E in resultado.historial %}
+        <tr>
+          <td>{{ k }}</td>
+          <td>{{ xi|join:", " }}</td>
+          <td>{{ E }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <h3>Gráfica</h3>
+    <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Jacobi">
+  {% endif %}
+{% endblock %}

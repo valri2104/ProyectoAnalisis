@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Algoritmos Numéricos{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+</head>
+<body>
+  <header><h1>Algoritmos Numéricos</h1></header>
+  <nav>
+<ul>
+  <li><a href="{% url 'biseccion' %}">Bisección</a></li>
+  <li><a href="{% url 'secante' %}">Secante</a></li>
+  <li><a href="{% url 'gauss_seidel' %}">Gauss Seidel</a></li>
+  <li><a href="{% url 'jacobi' %}">Jacobi</a></li>
+  <li><a href="{% url 'metodo_grafico' %}">Método Gráfico</a></li>
+  <li><a href="{% url 'newton' %}">Newton</a></li>
+  <li><a href="{% url 'punto_fijo' %}">Punto Fijo</a></li>
+  <li><a href="{% url 'raices_multiples' %}">Raíces Múltiples</a></li>
+  <li><a href="{% url 'regla_falsa' %}">Regla Falsa</a></li>
+  <li><a href="{% url 'sor' %}">SOR</a></li>
+</ul>
+  </nav>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

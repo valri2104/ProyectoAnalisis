@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Punto Fijo{% endblock %}
+
+{% block content %}
+<h1>Método de Punto Fijo</h1>
+<form method="post">{% csrf_token %}
+  <label>g(x):<input type="text" name="g" required></label><br>
+  <label>x0:<input type="number" step="any" name="x0" required></label><br>
+  <label>Tol:<input type="number" step="any" name="Tol" required></label><br>
+  <label>niter:<input type="number" name="niter" required></label><br>
+  <label>Error:<select name="error_type">
+    <option value="absoluto">Absoluto</option>
+    <option value="relativo">Relativo</option>
+  </select></label><br>
+  <button type="submit">Calcular</button>
+</form>
+{% if resultado %}
+  <h2>Resultado</h2>
+  <p>x={{resultado.x}}</p><p>Error={{resultado.E}}</p>
+  <h3>Historial</h3><table border="1">
+    <tr><th>k</th><th>x</th><th>E</th></tr>
+    {% for k,x,E in resultado.historial %}<tr><td>{{k}}</td><td>{{x}}</td><td>{{E}}</td></tr>{% endfor %}
+  </table>
+  <h3>Gráfica</h3><img src="data:image/png;base64,{{resultado.grafica_base64}}" alt="">
+{% endif %}
+{% endblock %}

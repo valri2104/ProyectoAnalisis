@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Bisección{% endblock %}
+
+{% block content %}
+<h1>Método de Bisección</h1>
+    <form method="post">{% csrf_token %}
+        <label>f(x): <input type="text" name="f" placeholder="e.g. x**3-2*x-5" required></label><br>
+        <label>xi: <input type="number" step="any" name="xi" required></label><br>
+        <label>xs: <input type="number" step="any" name="xs" required></label><br>
+        <label>Tol: <input type="number" step="any" name="Tol" required></label><br>
+        <label>niter: <input type="number" name="niter" required></label><br>
+        <label>Error type:
+            <select name="error_type">
+                <option value="absoluto">Absoluto</option>
+                <option value="relativo">Relativo</option>
+            </select>
+        </label><br>
+        <button type="submit">Calcular</button>
+    </form>
+
+    {% if resultado %}
+        <h2>Resultado</h2>
+        <p>Raíz aproximada (s): {{ resultado.s }}</p>
+        <p>Error (E): {{ resultado.E }}</p>
+        <p>f(s): {{ resultado.fm }}</p>
+
+        <h3>Historial</h3>
+        <table border="1">
+            <tr><th>Iter</th><th>s</th><th>f(s)</th><th>Error</th></tr>
+            {% for k, s, fs, E in resultado.historial %}
+            <tr>
+                <td>{{ k }}</td><td>{{ s }}</td><td>{{ fs }}</td><td>{{ E }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h3>Gráfica</h3>
+        <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Gráfica Bisección">
+    {% endif %}
+{% endblock %}

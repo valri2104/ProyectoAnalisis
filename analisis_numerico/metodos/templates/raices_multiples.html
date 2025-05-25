@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Raíces Múltiples{% endblock %}
+
+{% block content %}
+<h1>Raíces Múltiples</h1>
+<form method="post">{% csrf_token %}
+  <label>f(x):<input type="text" name="f" required></label><br>
+  <label>f'(x):<input type="text" name="df" required></label><br>
+  <label>f''(x):<input type="text" name="d2f" required></label><br>
+  <label>x0:<input type="number" step="any" name="x0" required></label><br>
+  <label>Tol:<input type="number" step="any" name="Tol" required></label><br>
+  <label>niter:<input type="number" name="niter" required></label><br>
+  <label>Error:<select name="error_type">
+    <option value="absoluto">Absoluto</option>
+    <option value="relativo">Relativo</option>
+  </select></label><br>
+  <button type="submit">Calcular</button>
+</form>
+{% if resultado %}
+  <h2>Resultado</h2>
+  <p>x={{resultado.x}}</p><p>Error={{resultado.E}}</p><p>f(x)={{resultado.fm}}</p>
+  <h3>Historial</h3><table border="1">
+    <tr><th>k</th><th>x</th><th>f(x)</th><th>E</th></tr>
+    {% for k,x,fx,E in resultado.historial %}<tr><td>{{k}}</td><td>{{x}}</td><td>{{fx}}</td><td>{{E}}</td></tr>{% endfor %}
+  </table>
+  <h3>Gráfica</h3><img src="data:image/png;base64,{{resultado.grafica_base64}}" alt="">
+{% endif %}
+{% endblock %}

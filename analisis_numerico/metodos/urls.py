@@ -1,0 +1,19 @@
+from django.urls import path
+from .views import (
+    vista_biseccion, vista_gauss_seidel, vista_jacobi, vista_metodo_grafico,
+    vista_newton, vista_punto_fijo, vista_raices_multiples, vista_regla_falsa,
+    vista_secante, vista_sor,
+)
+
+urlpatterns = [
+    path('biseccion/', vista_biseccion, name='biseccion'),
+    path('gauss-seidel/', vista_gauss_seidel, name='gauss_seidel'),
+    path('jacobi/', vista_jacobi, name='jacobi'),
+    path('metodo-grafico/', vista_metodo_grafico, name='metodo_grafico'),
+    path('newton/', vista_newton, name='newton'),
+    path('punto-fijo/', vista_punto_fijo, name='punto_fijo'),
+    path('raices-multiples/', vista_raices_multiples, name='raices_multiples'),
+    path('regla-falsa/', vista_regla_falsa, name='regla_falsa'),
+    path('secante/', vista_secante, name='secante'),
+    path('sor/', vista_sor, name='sor'),
+]

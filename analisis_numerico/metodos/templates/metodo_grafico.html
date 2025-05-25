@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Método Gráfico{% endblock %}
+
+{% block content %}
+<h1>Método Gráfico</h1>
+<form method="post">{% csrf_token %}
+  <label>f(x):<input type="text" name="f" required></label><br>
+  <label>A:<input type="number" step="any" name="A" required></label><br>
+  <label>b:<input type="number" step="any" name="b" required></label><br>
+   <label>Tol: <input type="number" step="any" name="Tol" required></label><br>
+  <label>niter:<input type="number" name="niter" value="100"></label><br>
+    <label>Error:<select name="error_type">
+    <option value="absoluto">Absoluto</option>
+    <option value="relativo">Relativo</option>
+  </select></label>
+  <button type="submit">Graficar</button>
+</form>
+{% if resultado %}
+  <h2>Gráfica</h2>
+  <img src="data:image/png;base64,{{resultado.grafica_base64}}" alt="">
+{% endif %}
+{% endblock %}
