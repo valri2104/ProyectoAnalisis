@@ -8,3 +8,8 @@ from .metodo_grafico import metodo_grafico
 from .jacobi import jacobi
 from .gauss_seidel import gauss_seidel
 from .biseccion import biseccion
+from .lagrange import lagrange
+from .newtonint import newtonint
+from .vandermonde import vandermonde
+from .spline_lineal import spline_lineal
+from .spline_cubico import spline_cubico

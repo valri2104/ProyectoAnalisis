@@ -1,83 +1,86 @@
 import numpy as np
-import io
-import base64
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-def sor(x0, A, b, Tol, niter, w, error_type):
-    # Paso 1: Validaciones
-    A = np.array(A, float)
-    b = np.array(b, float)
-    x = np.array(x0, float)
+def sor(x0, A, b, Tol, niter, w, tipo_error):
+    try:
+        # Validaciones básicas
+        A = np.array(A, dtype=float)
+        b = np.array(b, dtype=float).flatten()
+        x0 = np.array(x0, dtype=float).flatten()
 
-    if not (A.ndim == 2 and A.shape[0] == A.shape[1]):
-        raise ValueError("La matriz A debe ser cuadrada.")
-    if b.size != A.shape[0] or x.size != A.shape[0]:
-        raise ValueError("Las dimensiones de x0, A y b no son compatibles.")
-    if error_type.lower() not in ('absoluto', 'relativo'):
-        raise ValueError("error_type debe ser 'absoluto' o 'relativo'.")
-    if w <= 0 or w >= 2:
-        raise ValueError("El factor de relajación w debe estar entre 0 y 2.")
-    if Tol <= 0:
-        raise ValueError("La tolerancia debe ser positiva.")
-    if niter <= 0 or not float(niter).is_integer():
-        raise ValueError("niter debe ser un entero positivo.")
+        n, m = A.shape
+        if n != m:
+            raise ValueError("La matriz A debe ser cuadrada.")
+        if b.size != n:
+            raise ValueError("El vector b debe tener la misma longitud que A.")
+        if x0.size != n:
+            raise ValueError("El vector inicial x0 debe tener la misma longitud que b.")
+        if Tol <= 0:
+            raise ValueError("La tolerancia debe ser positiva.")
+        if not (0 < w < 2):
+            raise ValueError("El parámetro de relajación w debe estar en el intervalo (0, 2).")
+        if tipo_error not in ['absoluto', 'relativo']:
+            raise ValueError("tipo_error debe ser 'absoluto' o 'relativo'.")
 
-    # Verificar si la matriz es diagonalmente dominante
-    D = np.diag(np.abs(A))
-    S = np.sum(np.abs(A), axis=1) - D
-    if not np.all(D > S):
-        raise ValueError("La matriz A debe ser diagonalmente dominante para garantizar la convergencia.")
+        x = x0.copy()
+        E = []
+        historial = []
+        error = Tol + 1
+        k = 0
 
-    historial = []
-    datos = []
-    convergencia = False
+        print(f"\nMétodo SOR (w = {w:.2f}) - Error {tipo_error}")
+        print("-" * (13 + n * 13))
+        header = "Iter".ljust(6) + "".join([f"x{i+1}".rjust(12) for i in range(n)]) + "    Error"
+        print(header)
+        print("-" * (13 + n * 13))
 
-    for k in range(1, int(niter)+1):
-        x_new = x.copy()
-        for i in range(A.shape[0]):
-            s1 = np.dot(A[i, :i], x_new[:i])
-            s2 = np.dot(A[i, i+1:], x[i+1:])
-            x_new[i] = (1 - w)*x[i] + (w / A[i, i])*(b[i] - s1 - s2)
-        
-        if error_type.lower() == 'absoluto':
-            E = np.linalg.norm(x_new - x, ord=np.inf)
+        while error > Tol and k < niter:
+            x_old = x.copy()
+            for i in range(n):
+                sum1 = np.dot(A[i, :i], x[:i])
+                sum2 = np.dot(A[i, i+1:], x_old[i+1:])
+                x[i] = (1 - w) * x_old[i] + (w / A[i, i]) * (b[i] - sum1 - sum2)
+
+            # Calcular error
+            if tipo_error == 'absoluto':
+                error = np.linalg.norm(x - x_old, ord=np.inf)
+            else:
+                denom = np.linalg.norm(x, ord=np.inf)
+                error = np.linalg.norm(x - x_old, ord=np.inf) / (denom if denom > 0 else np.finfo(float).eps)
+
+            E.append(error)
+            historial.append(x.copy())
+
+            row = f"{k+1:<6}" + "".join([f"{xi:12.6f}" for xi in x]) + f" {error:12.2e}"
+            print(row)
+            k += 1
+
+        print("-" * (13 + n * 13))
+
+        if error <= Tol:
+            print(f"Convergencia lograda en {k} iteraciones con tolerancia {Tol:.2e}.")
         else:
-            E = np.linalg.norm((x_new - x) / x_new, ord=np.inf)
-        
-        historial.append((k, x_new.copy(), E))
-        datos.append(x_new.copy())
-        x = x_new
-        
-        if E < Tol:
-            convergencia = True
-            break
+            print(f"No se alcanzó la tolerancia después de {niter} iteraciones.")
 
-    if not convergencia:
-        raise ValueError("El método no convergió en el número máximo de iteraciones.")
+        print("\nVector solución aproximada:")
+        for i, xi in enumerate(x):
+            print(f"x{i+1} = {xi:.10f}")
 
-    # Gráfica
-    datos = np.array(datos)
-    plt.figure(figsize=(10, 6))
-    for i in range(datos.shape[1]):
-        plt.plot(range(1, datos.shape[0]+1), datos[:, i], '-o', linewidth=1.5, label=f'x{i+1}')
-    plt.xlabel('Iteración')
-    plt.ylabel('Valor de las variables')
-    plt.title('Evolución de las variables por iteración (Método SOR)')
-    plt.legend(loc='best')
-    plt.grid(True)
+        # Graficar evolución
+        historial = np.array(historial)
+        plt.figure(figsize=(8, 5))
+        for i in range(n):
+            plt.plot(range(1, k+1), historial[:, i], '-o', label=f'x{i+1}', linewidth=1.5)
+        plt.grid(True)
+        plt.xlabel('Iteración')
+        plt.ylabel('Valor de las variables')
+        plt.title('Evolución de las variables por iteración (Método SOR)')
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
 
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png', dpi=300, bbox_inches='tight')
-    plt.close()
-    buf.seek(0)
-    img_base64 = base64.b64encode(buf.read()).decode('ascii')
+        return E, x
 
-    return {
-        'x': x.tolist(),
-        'historial': historial,
-        'grafica_base64': img_base64,
-        'iteraciones': k,
-        'convergencia': convergencia
-    }
+    except Exception as e:
+        print(f"\nError: {e}")
+        return [], []

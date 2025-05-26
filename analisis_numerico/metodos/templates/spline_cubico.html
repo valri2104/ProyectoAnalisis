@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Spline Cúbico{% endblock %}
+
+{% block content %}
+<h1>Método Spline Cúbico</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="x">Vector x:</label>
+        <input type="text" id="x" name="x" placeholder="[1, 2, 3]" required value="{{ x }}">
+        <div class="help-text">Ingrese una lista ordenada y sin valores repetidos.</div>
+        <div class="example-text">Ejemplo: [1, 2, 3]</div>
+    </div>
+    <div class="form-group">
+        <label for="y">Vector y:</label>
+        <input type="text" id="y" name="y" placeholder="[2, 3, 5]" required value="{{ y }}">
+        <div class="help-text">Ingrese los valores correspondientes de y.</div>
+        <div class="example-text">Ejemplo: [2, 3, 5]</div>
+    </div>
+    <button type="submit">Interpolar</button>
+</form>
+
+{% if resultado %}
+    <div class="resultados">
+        <h2>Coeficientes por tramos:</h2>
+        <pre>{{ resultado.tramos }}</pre>
+        <h3>Gráfica</h3>
+        <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Spline Cúbico">
+    </div>
+{% endif %}
+{% endblock %}

@@ -3,7 +3,7 @@ from django.contrib import messages
 from .algoritmos import (
     biseccion, secante, regla_falsa, raices_multiples,
     sor, punto_fijo,  newton, metodo_grafico,
-    jacobi, gauss_seidel
+    jacobi, gauss_seidel, lagrange, spline_cubico, spline_lineal, vandermonde, newtonint
 )
 import time
 import numpy as np
@@ -1175,3 +1175,130 @@ def informe_comparativo_lineales(request):
         'mejor_metodo': mejor_metodo,
         'metodo_original_url': metodo_original
     })
+
+#CAPITULO TRES (Falta lo del informe y revision errores)
+
+def vista_lagrange(request):
+    if request.method == 'POST':
+        try:
+            x_str = request.POST['x']
+            y_str = request.POST['y']
+            x = eval(x_str)
+            y = eval(y_str)
+
+            if not isinstance(x, list) or not isinstance(y, list):
+                messages.error(request, 'Las entradas deben ser listas.')
+                return render(request, 'lagrange.html', {'x': x_str, 'y': y_str})
+
+            if len(x) != len(y):
+                messages.error(request, 'Los vectores x e y deben tener la misma longitud.')
+                return render(request, 'lagrange.html', {'x': x_str, 'y': y_str})
+
+            resultado = lagrange(x, y)
+            messages.success(request, 'Cálculo completado exitosamente')
+            return render(request, 'lagrange.html', {'x': x_str, 'y': y_str, 'resultado': resultado})
+
+        except Exception as e:
+            messages.error(request, 'Error al procesar los datos.')
+            return render(request, 'lagrange.html', {'x': request.POST.get('x', ''), 'y': request.POST.get('y', '')})
+    return render(request, 'lagrange.html')
+
+def vista_vandermonde(request):
+    if request.method == 'POST':
+        try:
+            x_str = request.POST['x']
+            y_str = request.POST['y']
+            x = eval(x_str)
+            y = eval(y_str)
+
+            if not isinstance(x, list) or not isinstance(y, list):
+                messages.error(request, 'Las entradas deben ser listas.')
+                return render(request, 'vandermonde.html', {'x': x_str, 'y': y_str})
+
+            if len(x) != len(y):
+                messages.error(request, 'Los vectores x e y deben tener la misma longitud.')
+                return render(request, 'vandermonde.html', {'x': x_str, 'y': y_str})
+
+            resultado = vandermonde(x, y)
+            messages.success(request, 'Cálculo completado exitosamente')
+            return render(request, 'vandermonde.html', {'x': x_str, 'y': y_str, 'resultado': resultado})
+
+        except Exception as e:
+            messages.error(request, 'Error al procesar los datos.')
+            return render(request, 'vandermonde.html', {'x': request.POST.get('x', ''), 'y': request.POST.get('y', '')})
+    return render(request, 'vandermonde.html')
+
+def vista_spline_lineal(request):
+    if request.method == 'POST':
+        try:
+            x_str = request.POST['x']
+            y_str = request.POST['y']
+            x = eval(x_str)
+            y = eval(y_str)
+
+            if not isinstance(x, list) or not isinstance(y, list):
+                messages.error(request, 'Las entradas deben ser listas.')
+                return render(request, 'spline_lineal.html', {'x': x_str, 'y': y_str})
+
+            if len(x) != len(y):
+                messages.error(request, 'Los vectores x e y deben tener la misma longitud.')
+                return render(request, 'spline_lineal.html', {'x': x_str, 'y': y_str})
+
+            resultado = spline_lineal(x, y)
+            messages.success(request, 'Cálculo completado exitosamente')
+            return render(request, 'spline_lineal.html', {'x': x_str, 'y': y_str, 'resultado': resultado})
+
+        except Exception as e:
+            messages.error(request, 'Error al procesar los datos.')
+            return render(request, 'spline_lineal.html', {'x': request.POST.get('x', ''), 'y': request.POST.get('y', '')})
+    return render(request, 'spline_lineal.html')
+
+def vista_spline_cubico(request):
+    if request.method == 'POST':
+        try:
+            x_str = request.POST['x']
+            y_str = request.POST['y']
+            x = eval(x_str)
+            y = eval(y_str)
+
+            if not isinstance(x, list) or not isinstance(y, list):
+                messages.error(request, 'Las entradas deben ser listas.')
+                return render(request, 'spline_cubico.html', {'x': x_str, 'y': y_str})
+
+            if len(x) != len(y):
+                messages.error(request, 'Los vectores x e y deben tener la misma longitud.')
+                return render(request, 'spline_cubico.html', {'x': x_str, 'y': y_str})
+
+            resultado = spline_cubico(x, y)
+            messages.success(request, 'Cálculo completado exitosamente')
+            return render(request, 'spline_cubico.html', {'x': x_str, 'y': y_str, 'resultado': resultado})
+
+        except Exception as e:
+            messages.error(request, 'Error al procesar los datos.')
+            return render(request, 'spline_cubico.html', {'x': request.POST.get('x', ''), 'y': request.POST.get('y', '')})
+    return render(request, 'spline_cubico.html')
+
+def vista_newtonint(request):
+    if request.method == 'POST':
+        try:
+            x_str = request.POST['x']
+            y_str = request.POST['y']
+            x = eval(x_str)
+            y = eval(y_str)
+
+            if not isinstance(x, list) or not isinstance(y, list):
+                messages.error(request, 'Las entradas deben ser listas.')
+                return render(request, 'newton.html', {'x': x_str, 'y': y_str})
+
+            if len(x) != len(y):
+                messages.error(request, 'Los vectores x e y deben tener la misma longitud.')
+                return render(request, 'newton.html', {'x': x_str, 'y': y_str})
+
+            resultado = newtonint(x, y)
+            messages.success(request, 'Cálculo completado exitosamente')
+            return render(request, 'newton.html', {'x': x_str, 'y': y_str, 'resultado': resultado})
+
+        except Exception as e:
+            messages.error(request, 'Error al procesar los datos.')
+            return render(request, 'newton.html', {'x': request.POST.get('x', ''), 'y': request.POST.get('y', '')})
+    return render(request, 'newtonint.html')

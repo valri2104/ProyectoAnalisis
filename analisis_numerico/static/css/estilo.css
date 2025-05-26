@@ -344,3 +344,52 @@ main {
     font-size: 0.9rem;
     margin-top: 0.25rem;
 }
+
+/*menú desplegable en navegación */
+nav ul li {
+  position: relative; 
+}
+
+nav ul li ul {
+  display: none; 
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-bordes);
+  min-width: 180px;
+  padding: 0.5rem 0;
+  box-shadow: var(--sombra-suave);
+  z-index: 1000;
+}
+
+nav ul li:hover > ul {
+  display: block;
+}
+
+nav ul li ul li {
+  display: block;
+  margin: 0;
+}
+
+nav ul li ul li a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--color-texto);
+  text-align: left;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+nav ul li ul li a:hover {
+  background-color: var(--color-acento-suave);
+  color: var(--color-acento);
+  text-decoration: none;
+}
+
+nav > ul {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
