@@ -77,17 +77,3 @@ ProyectoAnalisis/
 │   └── manage.py           # Script de administración de Django
 └── requirements.txt        # Dependencias del proyecto
 ```
-
-## Contribuir
-
-Si deseas contribuir al proyecto:
-
-1. Haz un fork del repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles. 
