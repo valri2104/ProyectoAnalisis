@@ -1,6 +1,6 @@
 # Proyecto de Análisis Numérico
 
-Este proyecto es una aplicación web desarrollada en Django que implementa varios métodos numéricos para la resolución de ecuaciones y sistemas de ecuaciones.
+Aplicación web en Django que implementa métodos numéricos para resolver ecuaciones y sistemas de ecuaciones.
 
 ## Métodos Implementados
 
@@ -15,80 +15,54 @@ Este proyecto es una aplicación web desarrollada en Django que implementa vario
 - Regla Falsa
 - SOR (Successive Over-Relaxation)
 
-## Requisitos Previos
+## Requisitos
 
 - Python 3.8 o superior
-- pip (gestor de paquetes de Python)
-- Git (opcional, para clonar el repositorio)
+- pip
 
 ## Instalación
 
-1. Clonar el repositorio (o descargar los archivos):
+1. Crear y activar entorno virtual:
 ```bash
-git clone <url-del-repositorio>
-cd ProyectoAnalisis
-```
-
-2. Crear y activar un entorno virtual:
-```bash
-# En Windows
 python -m venv venv
-venv\Scripts\activate
-
-# En Linux/Mac
-python3 -m venv venv
-source venv/bin/activate
+venv\Scripts\activate  # Windows
+source venv/bin/activate  # Linux/Mac
 ```
 
-3. Instalar las dependencias:
+2. Instalar dependencias:
 ```bash
 pip install -r requirements.txt
 ```
 
-## Ejecución del Proyecto
+## Ejecución
 
-1. Asegúrate de estar en el directorio correcto:
+1. Navegar al directorio del proyecto:
 ```bash
 cd analisis_numerico
 ```
 
-2. Realiza las migraciones de la base de datos:
-```bash
-python manage.py migrate
-```
-
-3. Inicia el servidor de desarrollo:
+2. Iniciar el servidor:
 ```bash
 python manage.py runserver
 ```
 
-4. Abre tu navegador web y visita:
+3. Abrir en el navegador:
 ```
 http://127.0.0.1:8000/
 ```
 
-## Uso de la Aplicación
+## Uso
 
-1. Selecciona el método numérico que deseas utilizar desde el menú de navegación.
-2. Ingresa los parámetros requeridos para cada método:
-   - Para métodos de ecuaciones: función, puntos iniciales, tolerancia, etc.
-   - Para métodos de sistemas lineales: matriz A, vector b, vector inicial, etc.
-3. Haz clic en "Calcular" para obtener los resultados.
-4. Los resultados incluirán:
-   - La solución aproximada
-   - El historial de iteraciones
-   - Una gráfica del proceso
+1. Seleccionar el método numérico desde el menú
+2. Ingresar los parámetros requeridos:
+   - Para ecuaciones: función, puntos iniciales, tolerancia
+   - Para sistemas lineales: matriz A, vector b, vector inicial
+3. Hacer clic en "Calcular" para ver resultados
 
-## Notas Importantes
+## Notas
 
-- Para funciones matemáticas, usa la sintaxis de Python:
-  - Potencias: `x**2`
-  - Funciones trigonométricas: `math.sin(x)`, `math.cos(x)`
-  - Constantes: `math.pi`, `math.e`
-
-- Para matrices y vectores, usa la sintaxis de Python:
-  - Matriz: `[[1,2],[3,4]]`
-  - Vector: `[1,2,3]`
+- Funciones matemáticas: usar sintaxis Python (ej: `x**2`, `math.sin(x)`)
+- Matrices y vectores: usar sintaxis Python (ej: `[[1,2],[3,4]]`, `[1,2,3]`)
 
 ## Estructura del Proyecto
 
