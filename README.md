@@ -4,16 +4,26 @@ Aplicación web en Django que implementa métodos numéricos para resolver ecuac
 
 ## Métodos Implementados
 
+### Capítulo 1:
 - Bisección
 - Secante
-- Gauss-Seidel
-- Jacobi
 - Método Gráfico
 - Newton
 - Punto Fijo
 - Raíces Múltiples
 - Regla Falsa
+
+### Capítulo 2:
 - SOR (Successive Over-Relaxation)
+- Gauss-Seidel
+- Jacobi
+
+### Capítulo 3:
+- Vandermonde
+- Newton interpolante
+- Lagrange
+- Spline lineal
+- Spline cúbico
 
 ## Requisitos
 
