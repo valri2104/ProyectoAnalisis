@@ -4,35 +4,74 @@
   <h1>Método de Jacobi</h1>
   <form method="post">
     {% csrf_token %}
-    <label>A:<textarea name="A" rows="3" cols="30" required></textarea></label><br>
-    <label>b:<textarea name="b" rows="3" cols="30" required></textarea></label><br>
-    <label>x0:<textarea name="x0" rows="3" cols="30" required></textarea></label><br>
-    <label>Tol:<input type="number" step="any" name="Tol" required></label><br>
-    <label>niter:<input type="number" name="niter" min="1" required></label><br>
-    <label>Tipo de error:
-      <select name="error_type">
-        <option value="absoluto">Absoluto</option>
-        <option value="relativo">Relativo</option>
+    <div class="form-group">
+      <label for="A">Matriz A:</label>
+      <textarea id="A" name="A" rows="3" cols="30" required placeholder="[[4,1,1],[1,4,1],[1,1,4]]">{{ A }}</textarea>
+      <div class="help-text">Ingrese la matriz A en formato Python. Debe ser una matriz cuadrada.</div>
+      <div class="example-text">Ejemplo: [[4,1,1],[1,4,1],[1,1,4]] para un sistema 3x3</div>
+    </div>
+
+    <div class="form-group">
+      <label for="b">Vector b:</label>
+      <textarea id="b" name="b" rows="3" cols="30" required placeholder="[1,2,3]">{{ b }}</textarea>
+      <div class="help-text">Ingrese el vector b en formato Python. Debe tener la misma dimensión que A.</div>
+      <div class="example-text">Ejemplo: [1,2,3] para un sistema 3x3</div>
+    </div>
+
+    <div class="form-group">
+      <label for="x0">Vector inicial x0:</label>
+      <textarea id="x0" name="x0" rows="3" cols="30" required placeholder="[0,0,0]">{{ x0 }}</textarea>
+      <div class="help-text">Ingrese el vector inicial x0 en formato Python. Debe tener la misma dimensión que A.</div>
+      <div class="example-text">Ejemplo: [0,0,0] para un sistema 3x3</div>
+    </div>
+
+    <div class="form-group">
+      <label for="Tol">Tolerancia:</label>
+      <input type="number" step="any" id="Tol" name="Tol" required value="{{ Tol }}">
+      <div class="help-text">Ingrese un número positivo pequeño (ej: 0.0001).</div>
+    </div>
+
+    <div class="form-group">
+      <label for="niter">Número máximo de iteraciones:</label>
+      <input type="number" id="niter" name="niter" min="1" required value="{{ niter }}">
+      <div class="help-text">Ingrese un número entero positivo.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="error_type">Tipo de error:</label>
+      <select id="error_type" name="error_type">
+        <option value="absoluto" {% if error_type == 'absoluto' %}selected{% endif %}>Absoluto</option>
+        <option value="relativo" {% if error_type == 'relativo' %}selected{% endif %}>Relativo</option>
       </select>
-    </label><br>
+      <div class="help-text">Seleccione el tipo de error para el criterio de parada.</div>
+    </div>
+
     <button type="submit">Calcular</button>
   </form>
 
   {% if resultado %}
-    <h2>Resultado</h2>
-    <p>x = {{ resultado.x|join:", " }}</p>
-    <h3>Historial</h3>
-    <table border="1">
-      <tr><th>k</th><th>x</th><th>E</th></tr>
-      {% for k, xi, E in resultado.historial %}
+    <div class="resultados">
+      <h2>Resultado</h2>
+      <p>Solución x = {{ resultado.x|join:", " }}</p>
+
+      <h3>Historial de iteraciones</h3>
+      <table>
         <tr>
-          <td>{{ k }}</td>
-          <td>{{ xi|join:", " }}</td>
-          <td>{{ E }}</td>
+          <th>Iteración</th>
+          <th>x</th>
+          <th>Error</th>
         </tr>
-      {% endfor %}
-    </table>
-    <h3>Gráfica</h3>
-    <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Jacobi">
+        {% for k, xi, E in resultado.historial %}
+          <tr>
+            <td>{{ k }}</td>
+            <td>{{ xi|join:", " }}</td>
+            <td>{{ E }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+
+      <h3>Gráfica</h3>
+      <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Jacobi">
+    </div>
   {% endif %}
 {% endblock %}

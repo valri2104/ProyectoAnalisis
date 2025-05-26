@@ -2,27 +2,79 @@
 {% block title %}Regla Falsa{% endblock %}
 
 {% block content %}
-<h1>Regla Falsa</h1>
-<form method="post">{% csrf_token %}
-  <label>f(x):<input type="text" name="f" required></label><br>
-  <label>xi:<input type="number" step="any" name="xi" required></label><br>
-  <label>xs:<input type="number" step="any" name="xs" required></label><br>
-  <label>Tol:<input type="number" step="any" name="Tol" required></label><br>
-  <label>niter:<input type="number" name="niter" required></label><br>
-  <label>Error:<select name="error_type">
-    <option value="absoluto">Absoluto</option>
-    <option value="relativo">Relativo</option>
-  </select></label><br>
-  <button type="submit">Calcular</button>
+<h1>Método de Regla Falsa</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="f">Función f(x):</label>
+        <input type="text" id="f" name="f" placeholder="x**3 - 2*x - 5" required value="{{ f }}">
+        <div class="help-text">Ingrese la función usando la sintaxis de Python. Use x como variable.</div>
+        <div class="example-text">Ejemplos: x**3 - 2*x - 5, x**2 - 4, math.sin(x) - x/2</div>
+    </div>
+
+    <div class="form-group">
+        <label for="xi">Límite inferior (xi):</label>
+        <input type="number" step="any" id="xi" name="xi" required value="{{ xi }}">
+        <div class="help-text">Ingrese el valor inicial del intervalo.</div>
+    </div>
+
+    <div class="form-group">
+        <label for="xs">Límite superior (xs):</label>
+        <input type="number" step="any" id="xs" name="xs" required value="{{ xs }}">
+        <div class="help-text">Ingrese el valor final del intervalo. Debe ser mayor que xi.</div>
+    </div>
+
+    <div class="form-group">
+        <label for="Tol">Tolerancia:</label>
+        <input type="number" step="any" id="Tol" name="Tol" required value="{{ Tol }}">
+        <div class="help-text">Ingrese un número positivo pequeño (ej: 0.0001).</div>
+    </div>
+
+    <div class="form-group">
+        <label for="niter">Número máximo de iteraciones:</label>
+        <input type="number" id="niter" name="niter" min="1" required value="{{ niter }}">
+        <div class="help-text">Ingrese un número entero positivo.</div>
+    </div>
+
+    <div class="form-group">
+        <label for="error_type">Tipo de error:</label>
+        <select id="error_type" name="error_type">
+            <option value="absoluto" {% if error_type == 'absoluto' %}selected{% endif %}>Absoluto</option>
+            <option value="relativo" {% if error_type == 'relativo' %}selected{% endif %}>Relativo</option>
+        </select>
+        <div class="help-text">Seleccione el tipo de error para el criterio de parada.</div>
+    </div>
+
+    <button type="submit">Calcular</button>
 </form>
+
 {% if resultado %}
-  <h2>Resultado</h2>
-  <p>s={{resultado.s}}</p><p>Error={{resultado.E}}</p><p>f(s)={{resultado.fm}}</p>
-  <h3>Historial</h3><table border="1">
-    <tr><th>k</th><th>s</th><th>f(s)</th><th>E</th></tr>
-    {% for k,s,fs,E in resultado.historial %}<tr><td>{{k}}</td><td>{{s}}</td><td>{{fs}}</td><td>{{E}}</td></tr>{% endfor %}
-  </table>
-  <h3>Gráfica</h3>
-  <img src="data:image/png;base64,{{resultado.grafica_base64}}" alt="">
+    <div class="resultados">
+        <h2>Resultado</h2>
+        <p>Raíz aproximada (s): {{ resultado.s }}</p>
+        <p>Error (E): {{ resultado.E }}</p>
+        <p>f(s): {{ resultado.fm }}</p>
+
+        <h3>Historial de iteraciones</h3>
+        <table>
+            <tr>
+                <th>Iteración</th>
+                <th>Punto medio (s)</th>
+                <th>f(s)</th>
+                <th>Error</th>
+            </tr>
+            {% for k, s, fs, E in resultado.historial %}
+            <tr>
+                <td>{{ k }}</td>
+                <td>{{ s }}</td>
+                <td>{{ fs }}</td>
+                <td>{{ E }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h3>Gráfica</h3>
+        <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Gráfica Regla Falsa">
+    </div>
 {% endif %}
 {% endblock %}

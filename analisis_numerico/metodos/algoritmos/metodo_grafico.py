@@ -20,6 +20,7 @@ def metodo_grafico(f, a, b, Tol, niter, error_type):
     FX = np.array([f(xi) for xi in X])
     E = np.zeros(len(X))
     raiz_aprox = np.nan
+    historial = []
 
     for i in range(len(X)):
         if i == 0:
@@ -33,6 +34,7 @@ def metodo_grafico(f, a, b, Tol, niter, error_type):
                 raiz_aprox = X[i] if abs(FX[i]) < abs(FX[i-1]) else X[i-1]
             if not np.isnan(raiz_aprox) and E[i] < Tol:
                 break
+        historial.append((i+1, X[i], FX[i], E[i]))
 
     n = i + 1
 
@@ -55,9 +57,7 @@ def metodo_grafico(f, a, b, Tol, niter, error_type):
 
     return {
         'n': n,
-        'X': X[:n].tolist(),
-        'FX': FX[:n].tolist(),
-        'E': E[:n].tolist(),
         'raiz_aprox': raiz_aprox,
+        'historial': historial,
         'grafica_base64': grafica_base64
     }
