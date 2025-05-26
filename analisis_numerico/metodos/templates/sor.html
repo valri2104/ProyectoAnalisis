@@ -79,5 +79,39 @@
       <h3>Gráfica</h3>
       <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Gráfica SOR">
     </div>
+    <div class="comparative-analysis">
+        <form method="post" action="{% url 'informe_comparativo_lineales' %}">
+            {% csrf_token %}
+            <input type="hidden" name="metodo_original" value="sor">
+            <input type="hidden" name="A" value="{{ A }}">
+            <input type="hidden" name="b" value="{{ b }}">
+            <input type="hidden" name="x0" value="{{ x0 }}">
+            <input type="hidden" name="Tol" value="{{ Tol }}">
+            <input type="hidden" name="niter" value="{{ niter }}">
+            <input type="hidden" name="error_type" value="{{ error_type }}">
+            <input type="hidden" name="omega" value="{{ omega }}">
+            <button type="submit" class="comparative-button">➡️ Generar informe comparativo con otros métodos lineales</button>
+        </form>
+    </div>
   {% endif %}
+  <style>
+  .comparative-analysis {
+      margin-top: 30px;
+      text-align: center;
+  }
+  .comparative-button {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background-color 0.3s;
+  }
+  .comparative-button:hover {
+      background-color: #218838;
+  }
+  </style>
 {% endblock %}

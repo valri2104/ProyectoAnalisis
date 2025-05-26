@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     home, vista_biseccion, vista_gauss_seidel, vista_jacobi, vista_metodo_grafico,
     vista_newton, vista_punto_fijo, vista_raices_multiples, vista_regla_falsa,
-    vista_secante, vista_sor, informe_comparativo,
+    vista_secante, vista_sor, informe_comparativo, informe_comparativo_lineales,
 )
 
 urlpatterns = [
@@ -18,4 +18,5 @@ urlpatterns = [
     path('secante/', vista_secante, name='secante'),
     path('sor/', vista_sor, name='sor'),
     path('informe-comparativo/', informe_comparativo, name='informe_comparativo'),
+    path('informe-comparativo-lineales/', informe_comparativo_lineales, name='informe_comparativo_lineales'),
 ]

@@ -6,6 +6,7 @@ from .algoritmos import (
     jacobi, gauss_seidel
 )
 import time
+import numpy as np
 
 def home(request):
     return render(request, 'home.html')
@@ -1046,6 +1047,130 @@ def informe_comparativo(request):
         'metodo_original': metodo_original.replace('_', ' ').title(),
         'funcion': funcion_str,
         'tolerancia': tolerancia,
+        'resultados': resultados,
+        'mejor_metodo': mejor_metodo,
+        'metodo_original_url': metodo_original
+    })
+
+def informe_comparativo_lineales(request):
+    if request.method != 'POST':
+        return redirect('home')
+
+    A_str = request.POST.get('A')
+    b_str = request.POST.get('b')
+    x0_str = request.POST.get('x0')
+    tol = float(request.POST.get('Tol'))
+    niter = int(request.POST.get('niter'))
+    error_type = request.POST.get('error_type')
+    metodo_original = request.POST.get('metodo_original')
+    omega = request.POST.get('omega', None)
+
+    # Convertir a listas
+    try:
+        A = eval(A_str)
+        b = eval(b_str)
+        x0 = eval(x0_str)
+    except Exception as e:
+        return render(request, 'error.html', {'mensaje': 'Error en el formato de las matrices/vectores.'})
+
+    metodos = {
+        'jacobi': lambda: jacobi(x0, A, b, tol, niter, error_type),
+        'gauss_seidel': lambda: gauss_seidel(x0, A, b, tol, niter, error_type),
+        'sor': lambda: sor(A, b, x0, float(omega), tol, niter, error_type) if omega else None
+    }
+
+    resultados = []
+    mensaje_usuario_error = "Este método no logró encontrar una solución en el número máximo de iteraciones o produjo un error de cálculo."
+
+    # Ejecutar el método original primero y marcarlo
+    if metodo_original in metodos:
+        try:
+            inicio = time.time()
+            resultado = metodos[metodo_original]()
+            tiempo = time.time() - inicio
+            iteraciones = len(resultado['historial'])
+            solucion = np.array2string(np.array(resultado['x'])) if 'x' in resultado else '-'
+            resultados.append({
+                'metodo': metodo_original.replace('_', ' ').title(),
+                'iteraciones': iteraciones,
+                'tiempo': tiempo,
+                'solucion': solucion,
+                'exito': True,
+                'mensaje': 'Convergió',
+                'original': True,
+                'detalle_error': ''
+            })
+        except Exception as e:
+            resultados.append({
+                'metodo': metodo_original.replace('_', ' ').title(),
+                'iteraciones': '-',
+                'tiempo': '-',
+                'solucion': '-',
+                'exito': False,
+                'mensaje': mensaje_usuario_error,
+                'original': True,
+                'detalle_error': str(e)
+            })
+        del metodos[metodo_original]
+
+    # Ejecutar el resto de métodos
+    for nombre_metodo, metodo_func in metodos.items():
+        if metodo_func is None:
+            continue
+        try:
+            inicio = time.time()
+            resultado = metodo_func()
+            tiempo = time.time() - inicio
+            iteraciones = len(resultado['historial'])
+            solucion = np.array2string(np.array(resultado['x'])) if 'x' in resultado else '-'
+            resultados.append({
+                'metodo': nombre_metodo.replace('_', ' ').title(),
+                'iteraciones': iteraciones,
+                'tiempo': tiempo,
+                'solucion': solucion,
+                'exito': True,
+                'mensaje': 'Convergió',
+                'original': False,
+                'detalle_error': ''
+            })
+        except Exception as e:
+            resultados.append({
+                'metodo': nombre_metodo.replace('_', ' ').title(),
+                'iteraciones': '-',
+                'tiempo': '-',
+                'solucion': '-',
+                'exito': False,
+                'mensaje': mensaje_usuario_error,
+                'original': False,
+                'detalle_error': str(e)
+            })
+
+    # Ordenar por menor número de iteraciones (errores al final, luego por tiempo)
+    def iteraciones_key(x):
+        try:
+            return (int(x['iteraciones']) if str(x['iteraciones']).isdigit() else float('inf'), x['tiempo'] if x['exito'] else float('inf'))
+        except:
+            return (float('inf'), float('inf'))
+    resultados.sort(key=iteraciones_key)
+
+    # Elegir el mejor método: el primero que haya convergido en la tabla ordenada
+    mejor_metodo = None
+    for r in resultados:
+        if r['exito']:
+            mejor_metodo = {
+                'nombre': r['metodo'],
+                'iteraciones': r['iteraciones'],
+                'tiempo': r['tiempo']
+            }
+            break
+
+    return render(request, 'informe_comparativo_lineales.html', {
+        'metodo_original': metodo_original.replace('_', ' ').title(),
+        'A': A_str,
+        'b': b_str,
+        'x0': x0_str,
+        'tol': tol,
+        'niter': niter,
         'resultados': resultados,
         'mejor_metodo': mejor_metodo,
         'metodo_original_url': metodo_original
