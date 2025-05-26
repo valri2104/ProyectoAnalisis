@@ -66,9 +66,9 @@
             {% for k, s, fs, E in resultado.historial %}
             <tr>
                 <td>{{ k }}</td>
-                <td>{{ s }}</td>
-                <td>{{ fs }}</td>
-                <td>{{ E }}</td>
+                <td>{{ s|floatformat:6 }}</td>
+                <td>{{ fs|floatformat:6 }}</td>
+                <td>{{ E|floatformat:6 }}</td>
             </tr>
             {% endfor %}
         </table>

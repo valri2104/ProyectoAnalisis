@@ -65,8 +65,8 @@
             {% for k, xi, E in resultado.historial %}
             <tr>
                 <td>{{ k }}</td>
-                <td>{{ xi|join:", " }}</td>
-                <td>{{ E }}</td>
+                <td>{{ xi|join:", "|floatformat:6 }}</td>
+                <td>{{ E|floatformat:6 }}</td>
             </tr>
             {% endfor %}
         </table>

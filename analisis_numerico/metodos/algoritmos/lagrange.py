@@ -1,6 +1,8 @@
 import numpy as np
 import sympy as sp
 import matplotlib.pyplot as plt
+import io
+import base64
 
 def lagrange(x, y):
     """
@@ -44,13 +46,18 @@ def lagrange(x, y):
     # Graficar
     f = sp.lambdify(t, poly_decimal, modules='numpy')
     t_vals = np.linspace(min(x)-1, max(x)+1, 500)
-    plt.plot(t_vals, f(t_vals), label='Polinomio', linewidth=2)
+    y_vals = f(t_vals)
+    plt.figure()
+    plt.plot(t_vals, y_vals, label='Polinomio de Lagrange', linewidth=2)
     plt.plot(x, y, 'ro', label='Datos originales', markersize=8)
-    plt.title('Polinomio de Interpolación de Lagrange')
+    plt.title('Interpolación de Lagrange')
     plt.xlabel('x')
     plt.ylabel('P(x)')
     plt.grid(True)
     plt.legend()
-    plt.show()
-
-    return poly_decimal
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close()
+    buf.seek(0)
+    grafica_base64 = base64.b64encode(buf.read()).decode('ascii')
+    return {'grafica_base64': grafica_base64}

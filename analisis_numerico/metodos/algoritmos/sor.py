@@ -1,4 +1,6 @@
 import numpy as np
+import io
+import base64
 import matplotlib.pyplot as plt
 
 def sor(x0, A, b, Tol, niter, w, tipo_error):
@@ -49,11 +51,11 @@ def sor(x0, A, b, Tol, niter, w, tipo_error):
                 error = np.linalg.norm(x - x_old, ord=np.inf) / (denom if denom > 0 else np.finfo(float).eps)
 
             E.append(error)
-            historial.append(x.copy())
-
-            row = f"{k+1:<6}" + "".join([f"{xi:12.6f}" for xi in x]) + f" {error:12.2e}"
-            print(row)
+            historial.append((k+1, x.copy().tolist(), error))
             k += 1
+
+            row = f"{k:<6}" + "".join([f"{xi:12.6f}" for xi in x]) + f" {error:12.2e}"
+            print(row)
 
         print("-" * (13 + n * 13))
 
@@ -67,20 +69,33 @@ def sor(x0, A, b, Tol, niter, w, tipo_error):
             print(f"x{i+1} = {xi:.10f}")
 
         # Graficar evolución
-        historial = np.array(historial)
+        historial_np = np.array([h[1] for h in historial])
         plt.figure(figsize=(8, 5))
         for i in range(n):
-            plt.plot(range(1, k+1), historial[:, i], '-o', label=f'x{i+1}', linewidth=1.5)
+            plt.plot(range(1, k+1), historial_np[:, i], '-o', label=f'x{i+1}', linewidth=1.5)
         plt.grid(True)
         plt.xlabel('Iteración')
         plt.ylabel('Valor de las variables')
         plt.title('Evolución de las variables por iteración (Método SOR)')
         plt.legend()
         plt.tight_layout()
-        plt.show()
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        plt.close()
+        buf.seek(0)
+        grafica_base64 = base64.b64encode(buf.read()).decode('ascii')
 
-        return E, x
+        return {
+            'x': x.tolist(),
+            'historial': historial,
+            'grafica_base64': grafica_base64
+        }
 
     except Exception as e:
         print(f"\nError: {e}")
-        return [], []
+        return {
+            'x': [],
+            'historial': [],
+            'grafica_base64': None,
+            'error': str(e)
+        }

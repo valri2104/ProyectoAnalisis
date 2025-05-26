@@ -2,13 +2,14 @@
 {% block title %}Jacobi{% endblock %}
 {% block content %}
   <h1>Método de Jacobi</h1>
-  <form method="post">
+  <form method="post" id="jacobiForm" onsubmit="return validateForm()">
     {% csrf_token %}
     <div class="form-group">
       <label for="A">Matriz A:</label>
       <textarea id="A" name="A" rows="3" cols="30" required placeholder="[[4,1,1],[1,4,1],[1,1,4]]">{{ A }}</textarea>
       <div class="help-text">Ingrese la matriz A en formato Python. Debe ser una matriz cuadrada.</div>
       <div class="example-text">Ejemplo: [[4,1,1],[1,4,1],[1,1,4]] para un sistema 3x3</div>
+      <div class="error-message" id="A-error" style="display: none;"></div>
     </div>
 
     <div class="form-group">
@@ -16,6 +17,7 @@
       <textarea id="b" name="b" rows="3" cols="30" required placeholder="[1,2,3]">{{ b }}</textarea>
       <div class="help-text">Ingrese el vector b en formato Python. Debe tener la misma dimensión que A.</div>
       <div class="example-text">Ejemplo: [1,2,3] para un sistema 3x3</div>
+      <div class="error-message" id="b-error" style="display: none;"></div>
     </div>
 
     <div class="form-group">
@@ -23,18 +25,21 @@
       <textarea id="x0" name="x0" rows="3" cols="30" required placeholder="[0,0,0]">{{ x0 }}</textarea>
       <div class="help-text">Ingrese el vector inicial x0 en formato Python. Debe tener la misma dimensión que A.</div>
       <div class="example-text">Ejemplo: [0,0,0] para un sistema 3x3</div>
+      <div class="error-message" id="x0-error" style="display: none;"></div>
     </div>
 
     <div class="form-group">
       <label for="Tol">Tolerancia:</label>
-      <input type="number" step="any" id="Tol" name="Tol" required value="{{ Tol }}">
+      <input type="number" step="any" id="Tol" name="Tol" required value="{{ Tol }}" min="0.0000000001" max="1">
       <div class="help-text">Ingrese un número positivo pequeño (ej: 0.0001).</div>
+      <div class="error-message" id="Tol-error" style="display: none;"></div>
     </div>
 
     <div class="form-group">
       <label for="niter">Número máximo de iteraciones:</label>
-      <input type="number" id="niter" name="niter" min="1" required value="{{ niter }}">
+      <input type="number" id="niter" name="niter" min="1" max="1000" required value="{{ niter }}">
       <div class="help-text">Ingrese un número entero positivo.</div>
+      <div class="error-message" id="niter-error" style="display: none;"></div>
     </div>
 
     <div class="form-group">
@@ -64,8 +69,8 @@
         {% for k, xi, E in resultado.historial %}
           <tr>
             <td>{{ k }}</td>
-            <td>{{ xi|join:", " }}</td>
-            <td>{{ E }}</td>
+            <td>{{ xi|join:", "|floatformat:6 }}</td>
+            <td>{{ E|floatformat:6 }}</td>
           </tr>
         {% endfor %}
       </table>
@@ -87,6 +92,87 @@
         </form>
     </div>
   {% endif %}
+
+  <script>
+    function validateMatrix(matrixStr) {
+      try {
+        const matrix = JSON.parse(matrixStr.replace(/'/g, '"'));
+        if (!Array.isArray(matrix) || !matrix.every(row => Array.isArray(row))) {
+          return false;
+        }
+        const n = matrix.length;
+        return matrix.every(row => row.length === n);
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function validateVector(vectorStr) {
+      try {
+        const vector = JSON.parse(vectorStr.replace(/'/g, '"'));
+        return Array.isArray(vector) && vector.every(x => typeof x === 'number');
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function validateForm() {
+      let isValid = true;
+      const A = document.getElementById('A').value;
+      const b = document.getElementById('b').value;
+      const x0 = document.getElementById('x0').value;
+      const Tol = document.getElementById('Tol').value;
+      const niter = document.getElementById('niter').value;
+
+      // Validar matriz A
+      if (!validateMatrix(A)) {
+        document.getElementById('A-error').textContent = 'La matriz A debe ser cuadrada y en formato Python válido';
+        document.getElementById('A-error').style.display = 'block';
+        isValid = false;
+      } else {
+        document.getElementById('A-error').style.display = 'none';
+      }
+
+      // Validar vector b
+      if (!validateVector(b)) {
+        document.getElementById('b-error').textContent = 'El vector b debe estar en formato Python válido';
+        document.getElementById('b-error').style.display = 'block';
+        isValid = false;
+      } else {
+        document.getElementById('b-error').style.display = 'none';
+      }
+
+      // Validar vector x0
+      if (!validateVector(x0)) {
+        document.getElementById('x0-error').textContent = 'El vector x0 debe estar en formato Python válido';
+        document.getElementById('x0-error').style.display = 'block';
+        isValid = false;
+      } else {
+        document.getElementById('x0-error').style.display = 'none';
+      }
+
+      // Validar tolerancia
+      if (Tol <= 0 || Tol > 1) {
+        document.getElementById('Tol-error').textContent = 'La tolerancia debe ser un número positivo menor que 1';
+        document.getElementById('Tol-error').style.display = 'block';
+        isValid = false;
+      } else {
+        document.getElementById('Tol-error').style.display = 'none';
+      }
+
+      // Validar número de iteraciones
+      if (niter < 1 || niter > 1000) {
+        document.getElementById('niter-error').textContent = 'El número de iteraciones debe estar entre 1 y 1000';
+        document.getElementById('niter-error').style.display = 'block';
+        isValid = false;
+      } else {
+        document.getElementById('niter-error').style.display = 'none';
+      }
+
+      return isValid;
+    }
+  </script>
+
   <style>
   .comparative-analysis {
       margin-top: 30px;
@@ -105,6 +191,11 @@
   }
   .comparative-button:hover {
       background-color: #218838;
+  }
+  .error-message {
+      color: #dc3545;
+      font-size: 0.875em;
+      margin-top: 0.25rem;
   }
   </style>
 {% endblock %}

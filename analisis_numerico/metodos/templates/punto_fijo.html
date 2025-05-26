@@ -58,8 +58,8 @@
             {% for k, x, E in resultado.historial %}
             <tr>
                 <td>{{ k }}</td>
-                <td>{{ x }}</td>
-                <td>{{ E }}</td>
+                <td>{{ x|floatformat:6 }}</td>
+                <td>{{ E|floatformat:6 }}</td>
             </tr>
             {% endfor %}
         </table>

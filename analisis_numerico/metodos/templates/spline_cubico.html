@@ -22,10 +22,14 @@
 
 {% if resultado %}
     <div class="resultados">
-        <h2>Coeficientes por tramos:</h2>
-        <pre>{{ resultado.tramos }}</pre>
+        <h2>Coeficientes del Spline Cúbico</h2>
+        <p>{{ resultado.coef }}</p>
         <h3>Gráfica</h3>
-        <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Spline Cúbico">
+        {% if resultado.grafica_base64 %}
+            <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Gráfica Spline Cúbico">
+        {% else %}
+            <div style="color: #e74c3c; margin: 1rem 0;">No se pudo generar la gráfica para los datos ingresados.</div>
+        {% endif %}
     </div>
 {% endif %}
 {% endblock %}

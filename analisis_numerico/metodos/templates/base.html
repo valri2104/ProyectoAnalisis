@@ -1,60 +1,158 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>{% block title %}Algoritmos Numéricos{% endblock %}</title>
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aplicación web de métodos numéricos para resolver ecuaciones y sistemas de ecuaciones">
+    <title>{% block title %}Algoritmos Numéricos{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .loading-content {
+            text-align: center;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-message {
+            background-color: #fee;
+            border: 1px solid #fcc;
+            color: #c00;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-  <header><h1>Algoritmos Numéricos</h1></header>
-  <nav>
-    <ul>
-      <li>
-        <a href="#">Capítulo 1</a>
-        <ul>
-          <li><a href="{% url 'biseccion' %}">Bisección</a></li>
-          <li><a href="{% url 'regla_falsa' %}">Regla Falsa</a></li>
-          <li><a href="{% url 'punto_fijo' %}">Punto Fijo</a></li>
-          <li><a href="{% url 'newton' %}">Newton</a></li>
-          <li><a href="{% url 'secante' %}">Secante</a></li>
-          <li><a href="{% url 'raices_multiples' %}">Raíces Múltiples</a></li>
-          <li><a href="{% url 'metodo_grafico' %}">Método Gráfico</a></li>
-        </ul>
-      </li>
-
-      <li>
-        <a href="#">Capítulo 2</a>
-        <ul>
-          <li><a href="{% url 'jacobi' %}">Jacobi</a></li>
-          <li><a href="{% url 'gauss_seidel' %}">Gauss–Seidel</a></li>
-          <li><a href="{% url 'sor' %}">SOR</a></li>
-        </ul>
-      </li>
-
-      <li>
-        <a href="#">Capítulo 3</a>
-        <ul>
-          <li><a href="{% url 'vandermonde' %}">Vandermonde</a></li>
-          <li><a href="{% url 'newtonint' %}">Newton Interpolante</a></li>
-          <li><a href="{% url 'lagrange' %}">Lagrange</a></li>
-          <li><a href="{% url 'spline_lineal' %}">Spline Lineal</a></li>
-          <li><a href="{% url 'spline_cubico' %}">Spline Cúbico</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-  <main>
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-            {{ message }}
+    <div class="loading">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Procesando...</p>
         </div>
-        {% endfor %}
     </div>
-    {% endif %}
-    {% block content %}{% endblock %}
-  </main>
+
+    <header>
+        <div class="header-content">
+            <h1><i class="fas fa-calculator"></i> Algoritmos Numéricos</h1>
+            <p class="subtitle">Herramientas para análisis numérico</p>
+        </div>
+    </header>
+    
+    <nav>
+        <button class="mobile-menu-btn" aria-label="Menú">
+            <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-menu">
+            <li>
+                <a href="#" class="chapter-link"><i class="fas fa-square-root-alt"></i> Capítulo 1</a>
+                <ul>
+                    <li><a href="{% url 'biseccion' %}">Bisección</a></li>
+                    <li><a href="{% url 'regla_falsa' %}">Regla Falsa</a></li>
+                    <li><a href="{% url 'punto_fijo' %}">Punto Fijo</a></li>
+                    <li><a href="{% url 'newton' %}">Newton</a></li>
+                    <li><a href="{% url 'secante' %}">Secante</a></li>
+                    <li><a href="{% url 'raices_multiples' %}">Raíces Múltiples</a></li>
+                    <li><a href="{% url 'metodo_grafico' %}">Método Gráfico</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#" class="chapter-link"><i class="fas fa-table"></i> Capítulo 2</a>
+                <ul>
+                    <li><a href="{% url 'jacobi' %}">Jacobi</a></li>
+                    <li><a href="{% url 'gauss_seidel' %}">Gauss–Seidel</a></li>
+                    <li><a href="{% url 'sor' %}">SOR</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#" class="chapter-link"><i class="fas fa-chart-line"></i> Capítulo 3</a>
+                <ul>
+                    <li><a href="{% url 'vandermonde' %}">Vandermonde</a></li>
+                    <li><a href="{% url 'newtonint' %}">Newton Interpolante</a></li>
+                    <li><a href="{% url 'lagrange' %}">Lagrange</a></li>
+                    <li><a href="{% url 'spline_lineal' %}">Spline Lineal</a></li>
+                    <li><a href="{% url 'spline_cubico' %}">Spline Cúbico</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <main>
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; {% now "Y" %} Algoritmos Numéricos - Todos los derechos reservados</p>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.querySelector('.nav-menu');
+            const btn = document.querySelector('.mobile-menu-btn');
+            if (!nav.contains(event.target) && !btn.contains(event.target)) {
+                nav.classList.remove('active');
+            }
+        });
+
+        // Show loading indicator on form submit
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                document.querySelector('.loading').style.display = 'block';
+            });
+        });
+
+        // Input validation
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value < 0) {
+                    this.setCustomValidity('El valor debe ser positivo');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

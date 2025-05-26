@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import io
+import base64
 
 def spline_lineal(x, y):
     """
@@ -67,6 +69,9 @@ def spline_lineal(x, y):
     plt.ylabel('Spline Lineal')
     plt.title('Interpolación Spline Lineal')
     plt.legend()
-    plt.show()
-
-    return coef
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close()
+    buf.seek(0)
+    grafica_base64 = base64.b64encode(buf.read()).decode('ascii')
+    return {'coef': coef.tolist(), 'grafica_base64': grafica_base64}

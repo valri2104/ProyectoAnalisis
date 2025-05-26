@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sympy as sp
+import io
+import base64
 
 def vandermonde(x, y):
     """
@@ -51,6 +53,9 @@ def vandermonde(x, y):
     plt.ylabel('P(x)')
     plt.grid(True)
     plt.legend()
-    plt.show()
-
-    return pol_decimal
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close()
+    buf.seek(0)
+    grafica_base64 = base64.b64encode(buf.read()).decode('ascii')
+    return {'polinomio': str(pol_decimal), 'grafica_base64': grafica_base64}

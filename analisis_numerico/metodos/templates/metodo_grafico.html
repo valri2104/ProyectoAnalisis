@@ -65,9 +65,9 @@
             {% for i in resultado.historial %}
             <tr>
                 <td>{{ i.0 }}</td>
-                <td>{{ i.1 }}</td>
-                <td>{{ i.2 }}</td>
-                <td>{{ i.3 }}</td>
+                <td>{{ i.1|floatformat:6 }}</td>
+                <td>{{ i.2|floatformat:6 }}</td>
+                <td>{{ i.3|floatformat:6 }}</td>
             </tr>
             {% endfor %}
         </table>

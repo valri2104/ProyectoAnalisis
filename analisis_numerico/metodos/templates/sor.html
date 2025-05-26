@@ -70,14 +70,21 @@
         {% for k, xi, E in resultado.historial %}
           <tr>
             <td>{{ k }}</td>
-            <td>{{ xi|join:", " }}</td>
-            <td>{{ E }}</td>
+            <td>{{ xi|join:", "|floatformat:6 }}</td>
+            <td>{{ E|floatformat:6 }}</td>
           </tr>
         {% endfor %}
       </table>
 
       <h3>Gráfica</h3>
-      <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Gráfica SOR">
+      {% if resultado.grafica_base64 %}
+        <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Gráfica SOR">
+      {% else %}
+        <div style="color: #e74c3c; margin: 1rem 0;">No se pudo generar la gráfica para los datos ingresados.</div>
+      {% endif %}
+      {% if resultado.error %}
+        <div style="color: #e74c3c; margin: 1rem 0;">Error: {{ resultado.error }}</div>
+      {% endif %}
     </div>
     <div class="comparative-analysis">
         <form method="post" action="{% url 'informe_comparativo_lineales' %}">

@@ -22,10 +22,14 @@
 
 {% if resultado %}
     <div class="resultados">
-        <h2>Polinomio interpolante:</h2>
-        <pre>{{ resultado.polinomio }}</pre>
+        <h2>Polinomio de Vandermonde</h2>
+        <p>{{ resultado.polinomio }}</p>
         <h3>Gráfica</h3>
-        <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Gráfica Vandermonde">
+        {% if resultado.grafica_base64 %}
+            <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Gráfica Vandermonde">
+        {% else %}
+            <div style="color: #e74c3c; margin: 1rem 0;">No se pudo generar la gráfica para los datos ingresados.</div>
+        {% endif %}
     </div>
 {% endif %}
 {% endblock %}

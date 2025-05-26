@@ -801,7 +801,6 @@ def vista_sor(request):
             A_str = request.POST['A']
             b_str = request.POST['b']
             x0_str = request.POST['x0']
-            
             try:
                 A = eval(A_str)
                 b = eval(b_str)
@@ -872,6 +871,15 @@ def vista_sor(request):
                 })
 
             resultado = sor(A, b, x0, omega, tol, niter, error_type)
+            # Compatibilidad: si resultado es tupla, convertir a dict
+            if isinstance(resultado, tuple):
+                resultado = {
+                    'x': resultado[1] if len(resultado) > 1 else [],
+                    'historial': [],
+                    'grafica_base64': None
+                }
+            if 'grafica_base64' not in resultado:
+                resultado['grafica_base64'] = None
             messages.success(request, 'Cálculo completado exitosamente')
             return render(request, 'sor.html', {
                 'resultado': resultado,
@@ -906,14 +914,13 @@ def vista_sor(request):
                 'niter': request.POST.get('niter', ''),
                 'error_type': request.POST.get('error_type', '')
             })
-    
     return render(request, 'sor.html')
 
 def vista_metodo_grafico(request):
     resultado=None
     if request.method=='POST':
         f=lambda x: eval(request.POST['f'])
-        resultado=metodo_grafico(f,float(request.POST['A']),float(request.POST['b']), float(request.POST['Tol']),
+        resultado=metodo_grafico(f,float(request.POST['a']),float(request.POST['b']), float(request.POST['Tol']),
                                  int(request.POST['niter']), request.POST['error_type'])
     return render(request,'metodo_grafico.html',{'resultado':resultado})
 
@@ -1288,17 +1295,17 @@ def vista_newtonint(request):
 
             if not isinstance(x, list) or not isinstance(y, list):
                 messages.error(request, 'Las entradas deben ser listas.')
-                return render(request, 'newton.html', {'x': x_str, 'y': y_str})
+                return render(request, 'newtonint.html', {'x': x_str, 'y': y_str})
 
             if len(x) != len(y):
                 messages.error(request, 'Los vectores x e y deben tener la misma longitud.')
-                return render(request, 'newton.html', {'x': x_str, 'y': y_str})
+                return render(request, 'newtonint.html', {'x': x_str, 'y': y_str})
 
             resultado = newtonint(x, y)
             messages.success(request, 'Cálculo completado exitosamente')
-            return render(request, 'newton.html', {'x': x_str, 'y': y_str, 'resultado': resultado})
+            return render(request, 'newtonint.html', {'x': x_str, 'y': y_str, 'resultado': resultado})
 
         except Exception as e:
             messages.error(request, 'Error al procesar los datos.')
-            return render(request, 'newton.html', {'x': request.POST.get('x', ''), 'y': request.POST.get('y', '')})
+            return render(request, 'newtonint.html', {'x': request.POST.get('x', ''), 'y': request.POST.get('y', '')})
     return render(request, 'newtonint.html')

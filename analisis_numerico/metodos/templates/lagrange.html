@@ -24,8 +24,12 @@
     <div class="resultados">
         <h2>Polinomio interpolante:</h2>
         <pre>{{ resultado.polinomio }}</pre>
-        <h3>Gráfica</h3>
-        <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Gráfica Lagrange">
+        <h2>Gráfica de Lagrange</h2>
+        {% if resultado.grafica_base64 %}
+            <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Gráfica Lagrange">
+        {% else %}
+            <div style="color: #e74c3c; margin: 1rem 0;">No se pudo generar la gráfica para los datos ingresados.</div>
+        {% endif %}
     </div>
 {% endif %}
 {% endblock %}
