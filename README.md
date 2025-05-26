@@ -4,7 +4,7 @@ Aplicación web en Django que implementa métodos numéricos para resolver ecuac
 
 ## Métodos Implementados
 
-### Capítulo 1:
+### Capítulo 1: Solución numérica de ecuaciones no lineales
 - Bisección
 - Secante
 - Método Gráfico
@@ -13,12 +13,12 @@ Aplicación web en Django que implementa métodos numéricos para resolver ecuac
 - Raíces Múltiples
 - Regla Falsa
 
-### Capítulo 2:
+### Capítulo 2: Solución numérica de sistemas de ecuaciones
 - SOR (Successive Over-Relaxation)
 - Gauss-Seidel
 - Jacobi
 
-### Capítulo 3:
+### Capítulo 3: Interpolación
 - Vandermonde
 - Newton interpolante
 - Lagrange
