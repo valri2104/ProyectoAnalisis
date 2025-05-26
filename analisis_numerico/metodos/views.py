@@ -5,6 +5,7 @@ from .algoritmos import (
     sor, punto_fijo,  newton, metodo_grafico,
     jacobi, gauss_seidel
 )
+import time
 
 def home(request):
     return render(request, 'home.html')
@@ -914,3 +915,138 @@ def vista_metodo_grafico(request):
         resultado=metodo_grafico(f,float(request.POST['A']),float(request.POST['b']), float(request.POST['Tol']),
                                  int(request.POST['niter']), request.POST['error_type'])
     return render(request,'metodo_grafico.html',{'resultado':resultado})
+
+def informe_comparativo(request):
+    if request.method != 'POST':
+        return redirect('home')
+    
+    metodo_original = request.POST.get('metodo_original')
+    funcion_str = request.POST.get('funcion')
+    tolerancia = float(request.POST.get('tolerancia'))
+    niter = int(request.POST.get('niter'))
+    error_type = request.POST.get('error_type')
+    
+    f = lambda x: eval(funcion_str)
+    
+    metodos = {
+        'biseccion': lambda: biseccion(f, float(request.POST.get('xi')), float(request.POST.get('xs')), tolerancia, niter, error_type),
+        'regla_falsa': lambda: regla_falsa(f, float(request.POST.get('xi')), float(request.POST.get('xs')), tolerancia, niter, error_type),
+        'punto_fijo': lambda: punto_fijo(lambda x: (x + f(x))/2, float(request.POST.get('xi')), tolerancia, niter, error_type),
+        'newton': lambda: newton(f, lambda x: eval('2*x'), float(request.POST.get('xi')), tolerancia, niter, error_type),
+        'secante': lambda: secante(f, float(request.POST.get('xi')), float(request.POST.get('xs')), tolerancia, niter, error_type),
+        'raices_multiples': lambda: raices_multiples(f, lambda x: eval('2*x'), lambda x: 2, float(request.POST.get('xi')), tolerancia, niter, error_type)
+    }
+
+    resultados = []
+    mejor_metodo = None
+    mejor_tiempo = float('inf')
+    mensaje_usuario_error = "Este método no logró encontrar una solución en el número máximo de iteraciones o produjo un error de cálculo."
+
+    # Ejecutar el método original primero y marcarlo
+    if metodo_original in metodos:
+        try:
+            inicio = time.time()
+            resultado = metodos[metodo_original]()
+            tiempo = time.time() - inicio
+            if metodo_original in ['biseccion', 'regla_falsa']:
+                raiz = resultado['s']
+            else:
+                raiz = resultado['x']
+            iteraciones = len(resultado['historial'])
+            resultados.append({
+                'metodo': metodo_original.replace('_', ' ').title(),
+                'iteraciones': iteraciones,
+                'tiempo': tiempo,
+                'raiz': raiz,
+                'exito': True,
+                'mensaje': 'Convergió',
+                'original': True,
+                'detalle_error': ''
+            })
+            if tiempo < mejor_tiempo:
+                mejor_tiempo = tiempo
+                mejor_metodo = {
+                    'nombre': metodo_original.replace('_', ' ').title(),
+                    'iteraciones': iteraciones,
+                    'tiempo': tiempo
+                }
+        except Exception as e:
+            resultados.append({
+                'metodo': metodo_original.replace('_', ' ').title(),
+                'iteraciones': '-',
+                'tiempo': '-',
+                'raiz': '-',
+                'exito': False,
+                'mensaje': mensaje_usuario_error,
+                'original': True,
+                'detalle_error': str(e)
+            })
+        del metodos[metodo_original]
+
+    # Ejecutar el resto de métodos
+    for nombre_metodo, metodo_func in metodos.items():
+        try:
+            inicio = time.time()
+            resultado = metodo_func()
+            tiempo = time.time() - inicio
+            if nombre_metodo in ['biseccion', 'regla_falsa']:
+                raiz = resultado['s']
+            else:
+                raiz = resultado['x']
+            iteraciones = len(resultado['historial'])
+            resultados.append({
+                'metodo': nombre_metodo.replace('_', ' ').title(),
+                'iteraciones': iteraciones,
+                'tiempo': tiempo,
+                'raiz': raiz,
+                'exito': True,
+                'mensaje': 'Convergió',
+                'original': False,
+                'detalle_error': ''
+            })
+            if tiempo < mejor_tiempo:
+                mejor_tiempo = tiempo
+                mejor_metodo = {
+                    'nombre': nombre_metodo.replace('_', ' ').title(),
+                    'iteraciones': iteraciones,
+                    'tiempo': tiempo
+                }
+        except Exception as e:
+            resultados.append({
+                'metodo': nombre_metodo.replace('_', ' ').title(),
+                'iteraciones': '-',
+                'tiempo': '-',
+                'raiz': '-',
+                'exito': False,
+                'mensaje': mensaje_usuario_error,
+                'original': False,
+                'detalle_error': str(e)
+            })
+
+    # Ordenar resultados por número de iteraciones (menor a mayor), errores al final
+    def iteraciones_key(x):
+        try:
+            return (int(x['iteraciones']) if str(x['iteraciones']).isdigit() else float('inf'), x['tiempo'] if x['exito'] else float('inf'))
+        except:
+            return (float('inf'), float('inf'))
+    resultados.sort(key=iteraciones_key)
+
+    # Elegir el mejor método: el primero que haya convergido en la tabla ordenada
+    mejor_metodo = None
+    for r in resultados:
+        if r['exito']:
+            mejor_metodo = {
+                'nombre': r['metodo'],
+                'iteraciones': r['iteraciones'],
+                'tiempo': r['tiempo']
+            }
+            break
+
+    return render(request, 'informe_comparativo.html', {
+        'metodo_original': metodo_original.replace('_', ' ').title(),
+        'funcion': funcion_str,
+        'tolerancia': tolerancia,
+        'resultados': resultados,
+        'mejor_metodo': mejor_metodo,
+        'metodo_original_url': metodo_original
+    })

@@ -75,6 +75,43 @@
 
         <h3>Gráfica</h3>
         <img src="data:image/png;base64,{{ resultado.grafica_base64 }}" alt="Gráfica Regla Falsa">
+
+        <div class="comparative-analysis">
+            <form method="post" action="{% url 'informe_comparativo' %}">
+                {% csrf_token %}
+                <input type="hidden" name="metodo_original" value="regla_falsa">
+                <input type="hidden" name="funcion" value="{{ f }}">
+                <input type="hidden" name="tolerancia" value="{{ Tol }}">
+                <input type="hidden" name="xi" value="{{ xi }}">
+                <input type="hidden" name="xs" value="{{ xs }}">
+                <input type="hidden" name="niter" value="{{ niter }}">
+                <input type="hidden" name="error_type" value="{{ error_type }}">
+                <button type="submit" class="comparative-button">➡️ Generar informe comparativo con otros métodos</button>
+            </form>
+        </div>
     </div>
 {% endif %}
+
+<style>
+.comparative-analysis {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.comparative-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.comparative-button:hover {
+    background-color: #218838;
+}
+</style>
 {% endblock %}
