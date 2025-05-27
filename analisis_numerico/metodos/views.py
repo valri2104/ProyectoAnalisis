@@ -1309,3 +1309,96 @@ def vista_newtonint(request):
             messages.error(request, 'Error al procesar los datos.')
             return render(request, 'newtonint.html', {'x': request.POST.get('x', ''), 'y': request.POST.get('y', '')})
     return render(request, 'newtonint.html')
+
+def informe_comparativo_interpolacion(request):
+    if request.method != 'POST':
+        return redirect('home')
+
+    x_str = request.POST.get('x')
+    y_str = request.POST.get('y')
+    metodo_original = request.POST.get('metodo_original')
+
+    try:
+        x = eval(x_str)
+        y = eval(y_str)
+    except Exception as e:
+        return render(request, 'error.html', {'mensaje': 'Error en el formato de los vectores x e y.'})
+
+    metodos = {
+        'vandermonde': lambda: vandermonde(x, y),
+        'newtonint': lambda: newtonint(x, y),
+        'lagrange': lambda: lagrange(x, y),
+        'spline_lineal': lambda: spline_lineal(x, y),
+        'spline_cubico': lambda: spline_cubico(x, y),
+    }
+
+    resultados = []
+    mensaje_usuario_error = "Este método no logró encontrar una solución o produjo un error de cálculo."
+
+    # Ejecutar el método original primero y marcarlo
+    if metodo_original in metodos:
+        try:
+            inicio = time.time()
+            resultado = metodos[metodo_original]()
+            tiempo = time.time() - inicio
+            resultados.append({
+                'metodo': metodo_original.replace('_', ' ').title(),
+                'tiempo': tiempo,
+                'resultado': resultado,
+                'exito': True,
+                'mensaje': 'Éxito',
+                'original': True,
+                'detalle_error': ''
+            })
+        except Exception as e:
+            resultados.append({
+                'metodo': metodo_original.replace('_', ' ').title(),
+                'tiempo': '-',
+                'resultado': '-',
+                'exito': False,
+                'mensaje': mensaje_usuario_error,
+                'original': True,
+                'detalle_error': str(e)
+            })
+        del metodos[metodo_original]
+
+    # Ejecutar el resto de métodos
+    for nombre_metodo, metodo_func in metodos.items():
+        try:
+            inicio = time.time()
+            resultado = metodo_func()
+            tiempo = time.time() - inicio
+            resultados.append({
+                'metodo': nombre_metodo.replace('_', ' ').title(),
+                'tiempo': tiempo,
+                'resultado': resultado,
+                'exito': True,
+                'mensaje': 'Éxito',
+                'original': False,
+                'detalle_error': ''
+            })
+        except Exception as e:
+            resultados.append({
+                'metodo': nombre_metodo.replace('_', ' ').title(),
+                'tiempo': '-',
+                'resultado': '-',
+                'exito': False,
+                'mensaje': mensaje_usuario_error,
+                'original': False,
+                'detalle_error': str(e)
+            })
+
+    # Elegir el mejor método: el primero que haya tenido éxito y menor tiempo
+    mejor_metodo = None
+    resultados_exito = [r for r in resultados if r['exito']]
+    if resultados_exito:
+        mejor_metodo = min(resultados_exito, key=lambda r: r['tiempo'])
+
+    return render(request, 'informe_comparativo_interpolacion.html', {
+        'metodo_original': metodo_original.replace('_', ' ').title(),
+        'x': x_str,
+        'y': y_str,
+        'resultados': resultados,
+        'mejor_metodo': mejor_metodo,
+        'metodo_original_url': metodo_original
+    })

@@ -31,6 +31,15 @@
             <div style="color: #e74c3c; margin: 1rem 0;">No se pudo generar la gráfica para los datos ingresados.</div>
         {% endif %}
     </div>
+    <div class="comparative-analysis">
+        <form method="post" action="{% url 'informe_comparativo_interpolacion' %}">
+            {% csrf_token %}
+            <input type="hidden" name="metodo_original" value="spline_lineal">
+            <input type="hidden" name="x" value="{{ x }}">
+            <input type="hidden" name="y" value="{{ y }}">
+            <button type="submit" class="comparative-button">➡️ Generar informe comparativo con otros métodos de interpolación</button>
+        </form>
+    </div>
 {% endif %}
 {% endblock %}
 

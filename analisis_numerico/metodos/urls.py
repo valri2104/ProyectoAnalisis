@@ -3,7 +3,7 @@ from .views import (
     home, vista_biseccion, vista_gauss_seidel, vista_jacobi, vista_metodo_grafico,
     vista_newton, vista_punto_fijo, vista_raices_multiples, vista_regla_falsa,
     vista_secante, vista_sor, informe_comparativo, informe_comparativo_lineales, vista_lagrange, vista_vandermonde,
-    vista_spline_cubico, vista_spline_lineal, vista_newtonint
+    vista_spline_cubico, vista_spline_lineal, vista_newtonint, informe_comparativo_interpolacion
 )
 
 urlpatterns = [
@@ -25,4 +25,5 @@ urlpatterns = [
     path('newtonint/', vista_newtonint, name='newtonint'),
     path('informe-comparativo/', informe_comparativo, name='informe_comparativo'),
     path('informe-comparativo-lineales/', informe_comparativo_lineales, name='informe_comparativo_lineales'),
+    path('informe-comparativo-interpolacion/', informe_comparativo_interpolacion, name='informe_comparativo_interpolacion'),
 ]
